@@ -1,0 +1,9 @@
+<h2>Lista de Jugadores</h2>
+
+<div class="col-xs-3">
+    <ul class="nav navbar-nav ">  
+        <% @players.each do |player| %>
+          <li> <h4> <%= player.name %> </h4></li> <br>
+        <% end %>
+    </ul>
+</div> 

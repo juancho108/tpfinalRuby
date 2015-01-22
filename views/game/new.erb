@@ -1,0 +1,30 @@
+<%= display_error %>
+
+
+<h2>Select a size and an enemy</h2>
+<form class="form-horizontal" action="/games/new" method="POST">
+    <!-- Seleccion de tamaño -->
+    <div class="radio">
+      <label><input type="radio" name="size" value="5" checked="checked">5 x 5</label>
+    </div>
+    <div class="radio">
+      <label><input type="radio" name="size" value="10">10 x 10</label>
+    </div>
+    <div class="radio">
+      <label><input type="radio" name="size" value="15">15 x 15</label>
+    </div>
+    <!-- Seleccion de rival -->
+    <div class="col-xs-3">
+        <label class="control-label">Select Enemy</label>
+        <select class="form-control" name="player2">
+            <% @players.each do |player| %>
+              <option><%= player.name %></option>
+            <% end %>
+        </select>
+    </div>
+    <div class="col-xs-10">
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </div>
+
+
+</form>

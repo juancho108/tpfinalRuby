@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Navy Battle</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav id="myNavbar" class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Navy Battle</a>
+            <a href="/"></a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="nav navbar-nav ">
+            <li><img src="/img/barco.jpg" height="50px" width="50px"></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            <!--class="nav navbar-nav"-->
+                    <% if current_user %>
+                        <li><a href="#"> Hola <%= current_user.name%></a></li>
+                        <li><a href="/logout">Logout</a></li>
+                      <% else %>
+                        <li><a href="/login">Login</a></li> 
+                        <li><a href="/signup">Signup</a></li>
+                    <% end %>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <hr>
+    <hr>
+    <%= yield %>
+   <!-- <div class="row">
+        <div class="col-sm-12">
+
+        </div>
+    </div>
+    -->
+</div>
+</body>
+</html>                                   

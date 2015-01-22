@@ -1,0 +1,7 @@
+<h2>ERRORS</h2>
+
+<ol>
+<% errors.each do |attr, error_msg| %>
+  <li><!--<p class="bg-warning">--> <%= attr %>: <%= error_msg.join(", ") %> </p></li>  
+<% end %>
+</ol>

@@ -1,1 +1,5 @@
-Welcome to my site!
+<%= @mensaje %>
+<% if current_user %>
+  <h2> <a href="/players/games"> Crear Nueva Partida</a> </h2>
+<% end %>
+

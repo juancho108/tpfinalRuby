@@ -14,6 +14,7 @@ task :console do
   ENV['RACK_ENV'] ||= 'development'
   %w(irb irb/completion).each { |r| require r }
   require_relative 'app.rb'
+  Dir['./models/*.rb'].sort.each { |req| require_relative req }
 
   ARGV.clear
   IRB.start 

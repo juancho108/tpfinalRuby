@@ -12,15 +12,16 @@ class Application < Sinatra::Base
 
   configure :production, :development do
     enable :logging
+    enable :sessions
   end
 
   set :database, YAML.load_file('config/database.yml')[ENV['RACK_ENV']]
-
 
 #rutas 
   ##Authentication
 
 get '/' do
+  @mensaje = "welcome to my Site"
   erb :welcome
 end
 
@@ -70,23 +71,24 @@ end
 
   ##Game
 
-get '/games/new' do
+get '/players/games' do
   #if User.first() ? @players = User.all()
-   
   @players = User.where.not(id: current_user.id) unless User.first == nil
-  erb :'game/create'  
+  erb :'game/new'
 end
 
-post '/games/new' do 
+post '/players/games/' do 
   #crear nuevo juego
-  gameboard = Gameboard.new()
+  gameboard = GameBoard.create
+  @mensaje = gameboard.id
+  erb :welcome
 end
 
 
   ##GameBoard
 
 get '/gameboard/create' do 
-  erb :'gameboard/create'
+  erb :'gameboard/new'
 end
 
 get '/gameboard/show' do

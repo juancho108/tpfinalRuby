@@ -26,7 +26,12 @@ get '/' do
 end
 
 get '/login' do
-  erb :'auth/login'
+  if current_user == nil
+    erb :'auth/login'
+  else 
+    @message = "Hola #{current_user.name}"
+    erb :welcome
+  end
 end
 
 post '/login' do
@@ -78,11 +83,33 @@ get '/players/games' do
 end
 
 post '/players/games/' do 
-  #crear nuevo juego
-  gameboard = GameBoard.create
-  @mensaje = gameboard.id
+  #crear jugadores
+  player1 = current_user.id
+  player2 = User.find_by(name: params[:player2])
+  #crear tableros
+  gameboard_player_1 = GameBoard.create size: params[:size], ready: false
+  gameboard_player_2 = GameBoard.create size: params[:size], ready: false
+
+  game = Game.create(player1_id: current_user.id, player2_id: player2.id,
+                     game_board1_id: gameboard_player_1.id, game_board2_id: gameboard_player_2,
+                     turn: current_user.id)
+  gameboard_player_1.game_id= game.id
+  gameboard_player_2.game_id= game.id
+
+  gameboard_player_1.save
+  gameboard_player_2.save
+  #verificar si no necesito nada mas
+  redirect ('/players/current_user.id/games/game.id')
+end
+
+get '/players/:id/games/:id_game' do
+  #envio a ventana colocar barcos
+  @player = User.find(params[:id])
+  @game = Game.find(params[:id_game])
+  @message = "#{@player.name} #{@game.id}"
   erb :welcome
 end
+
 
 
   ##GameBoard

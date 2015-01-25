@@ -87,11 +87,12 @@ post '/players/games/' do
   player1 = current_user.id
   player2 = User.find_by(name: params[:player2])
   #crear tableros
-  gameboard_player_1 = GameBoard.create size: params[:size], ready: false
-  gameboard_player_2 = GameBoard.create size: params[:size], ready: false
+  gameboard_player_1 = GameBoard.create(size: params[:size].to_i, ready: false)
+  gameboard_player_2 = GameBoard.create(size: params[:size].to_i, ready: false)
 
+  #creo el juego
   game = Game.create(player1_id: current_user.id, player2_id: player2.id,
-                     game_board1_id: gameboard_player_1.id, game_board2_id: gameboard_player_2,
+                     game_board1_id: gameboard_player_1.id, game_board2_id: gameboard_player_2.id,
                      turn: current_user.id)
   gameboard_player_1.game_id= game.id
   gameboard_player_2.game_id= game.id
@@ -99,14 +100,30 @@ post '/players/games/' do
   gameboard_player_1.save
   gameboard_player_2.save
   #verificar si no necesito nada mas
-  redirect ('/players/current_user.id/games/game.id')
+  redirect ("/players/#{current_user.id}/games/#{game.id}")
 end
 
 get '/players/:id/games/:id_game' do
   #envio a ventana colocar barcos
-  @player = User.find(params[:id])
-  @game = Game.find(params[:id_game])
-  @message = "#{@player.name} #{@game.id}"
+  @player_id = params[:id]
+  @game_id = params[:id_game]
+  #buscar tablero a llenar
+  game = Game.find_by(id: @game_id)
+  if @player_id == game.player1_id
+    @gameboard = Gameboard.find_by(id: game.gameboard_player_1)
+  elsif @player_id == game.player2_id
+    @gameboard = Gameboard.find_by(id: game.gameboard_player_2)
+  else
+    @mensaje = "error"
+  end
+  erb :'game/update'
+end
+
+put '/players/:id/games/:id_game' do
+  #envio a ventana colocar barcos
+  player = User.find(params[:id])
+  game = Game.find(params[:id_game])
+  @mensaje = "#{@player.name} #{@game.id}"
   erb :welcome
 end
 

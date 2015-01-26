@@ -1,4 +1,5 @@
 require 'bundler'
+require 'matrix'
 
 
 ENV['RACK_ENV'] ||= 'development'
@@ -87,8 +88,8 @@ post '/players/games/' do
   player1 = current_user.id
   player2 = User.find_by(name: params[:player2])
   #crear tableros
-  gameboard_player_1 = GameBoard.create(size: params[:size].to_i, ready: false)
-  gameboard_player_2 = GameBoard.create(size: params[:size].to_i, ready: false)
+  gameboard_player_1 = GameBoard.create(size: params[:size].to_i, ships_positions: Matrix.build(params[:size].to_i) { 0 }.to_s )
+  gameboard_player_2 = GameBoard.create(size: params[:size].to_i, ships_positions: Matrix.build(params[:size].to_i) { 0 }.to_s )
 
   #creo el juego
   game = Game.create(player1_id: current_user.id, player2_id: player2.id,
@@ -105,17 +106,19 @@ end
 
 get '/players/:id/games/:id_game' do
   #envio a ventana colocar barcos
-  @player_id = params[:id]
+  @player_id = params[:id].to_i
   @game_id = params[:id_game]
   #buscar tablero a llenar
   game = Game.find_by(id: @game_id)
+  
   if @player_id == game.player1_id
-    @gameboard = Gameboard.find_by(id: game.gameboard_player_1)
+    @gameboard = GameBoard.find_by(id: game.game_board1_id)
   elsif @player_id == game.player2_id
-    @gameboard = Gameboard.find_by(id: game.gameboard_player_2)
+    @gameboard = GameBoard.find_by(id: game.game_board2_id)
   else
     @mensaje = "error"
   end
+  @ships_positions = @gameboard.ships_positions.to_a
   erb :'game/update'
 end
 
@@ -126,7 +129,6 @@ put '/players/:id/games/:id_game' do
   @mensaje = "#{@player.name} #{@game.id}"
   erb :welcome
 end
-
 
 
   ##GameBoard

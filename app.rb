@@ -1,5 +1,6 @@
 require 'bundler'
 require 'matrix'
+require 'json'
 
 
 ENV['RACK_ENV'] ||= 'development'
@@ -88,13 +89,12 @@ post '/players/games/' do
   player1 = current_user.id
   player2 = User.find_by(name: params[:player2])
   #crear tableros
-  gameboard_player_1 = GameBoard.create(size: params[:size].to_i, ships_positions: Matrix.build(params[:size].to_i) { 0 }.to_s )
-  gameboard_player_2 = GameBoard.create(size: params[:size].to_i, ships_positions: Matrix.build(params[:size].to_i) { 0 }.to_s )
+  gameboard_player_1 = GameBoard.create(size: params[:size].to_i, ships_positions: Matrix.build(params[:size].to_i) { 0 }.to_a.to_json )
+  gameboard_player_2 = GameBoard.create(size: params[:size].to_i, ships_positions: Matrix.build(params[:size].to_i) { 0 }.to_a.to_json )
 
   #creo el juego
   game = Game.create(player1_id: current_user.id, player2_id: player2.id,
-                     game_board1_id: gameboard_player_1.id, game_board2_id: gameboard_player_2.id,
-                     turn: current_user.id)
+                     game_board1_id: gameboard_player_1.id, game_board2_id: gameboard_player_2.id)
   gameboard_player_1.game_id= game.id
   gameboard_player_2.game_id= game.id
 
@@ -118,15 +118,32 @@ get '/players/:id/games/:id_game' do
   else
     @mensaje = "error"
   end
-  @ships_positions = @gameboard.ships_positions.to_a
+  @ships_positions = JSON.parse(@gameboard.ships_positions)
   erb :'game/update'
 end
 
 put '/players/:id/games/:id_game' do
   #envio a ventana colocar barcos
-  player = User.find(params[:id])
-  game = Game.find(params[:id_game])
-  @mensaje = "#{@player.name} #{@game.id}"
+  player_id = params[:id]
+  game = Game.find_by(id: params[:id_game])
+  raise params[:barco1].inspect
+  
+  #busco tablero a actualizar
+  if player_id == game.player1_id
+    gameboard = GameBoard.find_by(id: game.game_board1_id)
+  else 
+    gameboard = GameBoard.find_by(id: game.game_board2_id)
+  end
+  sp = gameboard.ships_positions.to_a
+  
+  #Tomo las posiciones de los barcos para guardarlas
+  (1..ships(gameboard.size)).each do |i|
+    a = params[:barco+i].split(",").map { |s| s.to_i }
+    sp[a[0]][a[1]] = 1
+  end
+  
+  #Guardo las posiciones de los barcos
+  gameboard.update ships_positions: sp.to_s, ready: true
   erb :welcome
 end
 

@@ -6,6 +6,7 @@ class CreateGameBoards < ActiveRecord::Migration
       t.string :ships_positions
 
       t.references :game
+      t.references :player
     end    
   end
 end

@@ -18,13 +18,14 @@ ActiveRecord::Schema.define(version: 20150122061936) do
     t.boolean "ready",           default: false
     t.string  "ships_positions"
     t.integer "game_id"
+    t.integer "player_id"
   end
 
   create_table "games", force: :cascade do |t|
     t.integer "winner_id"
     t.integer "player1_id"
     t.integer "player2_id"
-    t.integer "turn"
+    t.integer "turn_player_id"
     t.integer "game_board1_id"
     t.integer "game_board2_id"
   end

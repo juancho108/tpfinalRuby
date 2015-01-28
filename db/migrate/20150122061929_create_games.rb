@@ -4,7 +4,7 @@ class CreateGames < ActiveRecord::Migration
       t.references :winner
       t.references :player1
       t.references :player2
-      t.integer :turn
+      t.references :turn_player
       t.references :game_board1
       t.references :game_board2
     end

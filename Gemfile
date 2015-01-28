@@ -5,6 +5,7 @@ gem 'sqlite3'
 gem 'sinatra-activerecord'
 gem 'rb-readline'
 gem 'bcrypt'
+gem 'sinatra-contrib', require: 'sinatra/reloader'
 
 group :development do
   gem 'rake'

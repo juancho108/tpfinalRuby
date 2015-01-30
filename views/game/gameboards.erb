@@ -18,15 +18,15 @@
  
 <div id="content">
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-      <li <% if @gameboard.game.turn_player == nil%> class='active' <% end %>><a href="#mygameboard" data-toggle="tab">My GameBoard</a></li>
-      <li <% if @gameboard.game.turn_player%> class='active' <% end %>> <a href="#play" data-toggle="tab">Play Game</a></li>
+      <li <%= @gameboard.game.turn_player.nil? ? "class='active'" : '' %>><a href="#mygameboard" data-toggle="tab">My GameBoard</a></li>
+      <li <%= @gameboard.game.turn_player ? "class='active'" : '' %>> <a href="#play" data-toggle="tab">Play Game</a></li>
 
       <li><a href="#green" data-toggle="tab">Green</a></li>
    </ul>
 
    <!-- TABLERO PARA UBICAR BARCOS -->
     <div id="my-tab-content" class="tab-content">
-        <div class="tab-pane active" id="mygameboard">
+        <div class="tab-pane <%= @gameboard.game.turn_player.nil? ? 'active' : '' %>" id="mygameboard">
           <h2>Puts your ships in position</h2>
 
           <form class="form-horizontal" action="/players/<%= @player_id %>/games/<%= @game_id %>" method="POST" onsubmit="return verificar()">
@@ -68,7 +68,7 @@
         
         <!-- TABLERO PARA JUGAR (solo si hay un turno asignado) -->
 
-        <div class="tab-pane" id="play">
+        <div class="tab-pane <%= @gameboard.game.turn_player ? 'active' : '' %>" id="play">
           <%if @gameboard.game.turn_player %>
           <h2>Make your move</h2>
 

@@ -18,11 +18,13 @@
  
 <div id="content">
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-      <li class="active"><a href="#mygameboard" data-toggle="tab">My GameBoard</a></li>
-      <li><a href="#play" data-toggle="tab">Play Game</a></li>
+      <li <% if @gameboard.game.turn_player == nil%> class='active' <% end %>><a href="#mygameboard" data-toggle="tab">My GameBoard</a></li>
+      <li <% if @gameboard.game.turn_player%> class='active' <% end %>> <a href="#play" data-toggle="tab">Play Game</a></li>
+
       <li><a href="#green" data-toggle="tab">Green</a></li>
    </ul>
 
+   <!-- TABLERO PARA UBICAR BARCOS -->
     <div id="my-tab-content" class="tab-content">
         <div class="tab-pane active" id="mygameboard">
           <h2>Puts your ships in position</h2>
@@ -44,7 +46,7 @@
                   <tr>
                     <th class="tg-s6z2"><%= p e %></th>
                     <% @ships_positions[e].each_index do |x| %>
-                      <td class="tg-031e"> <input class="boton"  type="button" value="Mar " onClick="assignPosition('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>" > </td>
+                      <td class="tg-031e"> <input class="boton"  type="button" value="Sea " onClick="assignPosition('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>" > </td>
                     <% end %>           
                   </tr>
                 <% end %>
@@ -63,11 +65,14 @@
           </form>          
         </div>
 
+        
+        <!-- TABLERO PARA JUGAR (solo si hay un turno asignado) -->
+
         <div class="tab-pane" id="play">
+          <%if @gameboard.game.turn_player %>
           <h2>Make your move</h2>
 
-            <form class="form-horizontal" action="/players/<%= @player_id %>/games/<%= @game_id %>" method="POST" onsubmit="return verificar()">
-                <input type="hidden" name="_method" value="PUT" />
+            <form class="form-horizontal" id="play_game" action="/players/<%= @player_id %>/games/<%= @game_id %>/move" method="POST" onsubmit="return verificar()">
                 <input name="barcos" id="barcos" value="<%= ships @gameboard.size %>" type="hidden"/>
                 <div class="col-xs-1 ">
                   <label>Tenes <label id="lbarcos"><%= ships @gameboard.size %></label> Barcos</label>
@@ -75,31 +80,32 @@
                 <table class="tg col-xs-4">
                   <tr>
                     <th class="tg-s6z2 "></th>
-                      <% @ships_positions.each_index do |e| %>
+                      <% @moves.each_index do |e| %>
                          <th class="tg-s6z2"><%= p e %></th> 
                       <% end %>          
                   </tr>
-                  <% @ships_positions.each_index do |e| %>
+                  <% @moves.each_index do |e| %>
                     <tr>
                       <th class="tg-s6z2"><%= p e %></th>
-                      <% @ships_positions[e].each_index do |x| %>
-                        <td class="tg-031e"> <input class="boton"  type="button" value="Mar " onClick="assignPosition('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>" > </td>
+                      <% @moves[e].each_index do |x| %>
+                        <td class="tg-031e"> <input class="boton" name="<%= p "#{e},#{x}" %>" type="button" value="Shot" onClick="bomb('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>" > </td>
                       <% end %>           
                     </tr>
                   <% end %>
                 </table>
 
                 <div class="col-xs-2 ">
-                  <% (1..ships(@gameboard.size)).each do |e| %>
-                    <input type="hidden" name="barco<%= p e %>" class="form-control" id="barco<%= p e %>" value="Posicion Barco<%= p e %>" > 
-                  <% end %>
+                  <input type="hidden" name="move" class="form-control" id="move" value="bomba" > 
                 </div>
 
                 <div class="col-xs-10">
                     <button type="submit" class="btn btn-primary">Enviar</button>
                     <input type="button" class="btn btn-primary" onClick="history.go(0)" value="Reset Ships">
                 </div>
-            </form>          
+            </form>   
+          <% else %>
+            <h2>Waiting for all the players are ready ...</h2>
+          <% end %>       
         </div>
 
 

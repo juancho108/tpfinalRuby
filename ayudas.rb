@@ -22,6 +22,8 @@ cambiar graphycon dependiendo de las partidas ganadas, perdidas o en espera ne l
 
 modificar get players games para que muestre tablero
 
+verificar submits multiples
+
 
 #preguntas catedra: 
 

@@ -99,10 +99,11 @@ post '/players/games/' do
   #crear tableros
   gameboard_player_1 = GameBoard.create(size: params[:size].to_i, player_id: player1, ships_positions: Matrix.build(params[:size].to_i) { 0 }.to_a.to_json )
   gameboard_player_2 = GameBoard.create(size: params[:size].to_i, player_id: player2.id, ships_positions: Matrix.build(params[:size].to_i) { 0 }.to_a.to_json )
-
+  moves_player1 = Matrix.build(params[:size].to_i) { 0 }.to_a.to_json
+  moves_player2 = Matrix.build(params[:size].to_i) { 0 }.to_a.to_json
   #creo el juego
   game = Game.create(player1_id: current_user.id, player2_id: player2.id,
-                     game_board1_id: gameboard_player_1.id, game_board2_id: gameboard_player_2.id)
+                     game_board1_id: gameboard_player_1.id, game_board2_id: gameboard_player_2.id, moves_p1: moves_player1, moves_p2: moves_player2)
   gameboard_player_1.game_id= game.id
   gameboard_player_2.game_id= game.id
 
@@ -134,18 +135,24 @@ get '/players/:id/games/:id_game' do
         
         if @player_id == game.player1_id
           @gameboard = GameBoard.find_by(id: game.game_board1_id)
+          @moves = JSON.parse(game.moves_p1)
         elsif @player_id == game.player2_id
           @gameboard = GameBoard.find_by(id: game.game_board2_id)
+          @moves = JSON.parse(game.moves_p2)
         else
           @mensaje = "error"
         end
 
         @ships_positions = JSON.parse(@gameboard.ships_positions)
-        erb :'game/update'
+        erb :'game/gameboards'
   else
     set_error ("You don't have permission to view the gameboard from other players!! ")
     redirect("/players/#{current_user.id}/games")
   end
+end
+
+post '/players/:id/games/:id_game/move' do
+
 end
 
 

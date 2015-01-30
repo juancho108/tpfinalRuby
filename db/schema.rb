@@ -22,6 +22,8 @@ ActiveRecord::Schema.define(version: 20150122061936) do
   end
 
   create_table "games", force: :cascade do |t|
+    t.string  "moves_p1"
+    t.string  "moves_p2"
     t.integer "winner_id"
     t.integer "player1_id"
     t.integer "player2_id"

@@ -24,8 +24,19 @@ function assignPosition(position){
   }  
 } 
 
+function bomb(position){
+  aux = document.getElementById('move').value
+
+  if (aux == "bomba") {
+    document.getElementById(position).style.backgroundColor = 'red'
+  }
+  else{
+    document.getElementById(aux).style.backgroundColor = '#3166ff'
+  }
+
+  document.getElementById('move').value = position
+  alert('llego')
+}
 
 
-/*function assignPosition(a){
-  alert("funciona!"+a)
-}*/
+

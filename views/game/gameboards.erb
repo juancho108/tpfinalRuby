@@ -9,8 +9,9 @@
   .tg .tg-jhgd{background-color:#3166ff}
 
   .boton{
-  padding: 16px 19px;
-  background-color: #87CEFA
+    padding: 16px 19px;
+    background-color: #87CEFA;
+    width: 100%;
   }
   </style>
 
@@ -46,7 +47,7 @@
                   <tr>
                     <th class="tg-s6z2"><%= p e %></th>
                     <% @ships_positions[e].each_index do |x| %>
-                      <td class="tg-031e"> <input class="boton"  type="button" value="Sea " onClick="assignPosition('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>" > </td>
+                      <td class="tg-031e"> <input class="boton"  type="button" value=" " onClick="assignPosition('<%= "#{e},#{x}" %>')" id="<%= "t1,#{e},#{x}" %>" > </td>
                     <% end %>           
                   </tr>
                 <% end %>
@@ -88,7 +89,7 @@
                     <tr>
                       <th class="tg-s6z2"><%= p e %></th>
                       <% @moves[e].each_index do |x| %>
-                        <td class="tg-031e"> <input class="boton" name="<%= p "#{e},#{x}" %>" type="button" value="Shot" onClick="bomb('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>" > </td>
+                        <td class="tg-031e"> <input class="boton" name="<%= p "#{e},#{x}" %>" type="button" value="" onClick="bomb('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>" > </td>
                       <% end %>           
                     </tr>
                   <% end %>

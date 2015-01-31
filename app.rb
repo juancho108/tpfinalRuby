@@ -132,19 +132,26 @@ get '/players/:id/games/:id_game' do
         @game_id = params[:id_game]
         #buscar tablero a llenar
         game = Game.find_by(id: @game_id)
-        
-        if @player_id == game.player1_id
+        #pregunto si hay ganador
+        if game.winner.nil?
+          if @player_id == game.player1_id
           @gameboard = GameBoard.find_by(id: game.game_board1_id)
           @moves = JSON.parse(game.moves_p1)
-        elsif @player_id == game.player2_id
-          @gameboard = GameBoard.find_by(id: game.game_board2_id)
-          @moves = JSON.parse(game.moves_p2)
-        else
-          @mensaje = "error"
-        end
+          elsif @player_id == game.player2_id
+            @gameboard = GameBoard.find_by(id: game.game_board2_id)
+            @moves = JSON.parse(game.moves_p2)
+          end
 
-        @ships_positions = JSON.parse(@gameboard.ships_positions)
-        erb :'game/gameboards'
+          @ships_positions = JSON.parse(@gameboard.ships_positions)
+          erb :'game/gameboards'
+        elsif game.winner == current_user
+          @message = "CONGRATULATIONS! YOU WIN THE GAME!!"
+          redirect("/players/#{current_user.id}/games")
+        else 
+          @message = "Oh... YOU LOST THE GAME, TRY AGAIN!"
+          redirect("/players/#{current_user.id}/games")
+        end
+        
   else
     set_error ("You don't have permission to view the gameboard from other players!! ")
     redirect("/players/#{current_user.id}/games")
@@ -152,7 +159,35 @@ get '/players/:id/games/:id_game' do
 end
 
 post '/players/:id/games/:id_game/move' do
-
+  game = Game.find_by(id: params[:id_game])
+  #verifico que sea el turno del jugador que realizo el post
+  if params[:id].to_i == game.turn_player_id
+    move = params[:move].split(",").map { |s| s.to_i }
+    #me fijo que jugador realizo el move (player1 o player2).Traigo tablero rival, y actualizo mis movimientos y turno
+    if params[:id].to_i == game.player1_id
+      gameboard_rival = JSON.parse(game.game_board2.ships_positions)
+      moves = JSON.parse(game.moves_p1)
+      gameboard_rival[move[0]][move[1]] == 1 ?  moves[move[0]][move[1]] = 2 : moves[move[0]][move[1]] = 1
+      game.moves_p1 = moves.to_json
+      game.turn_player_id = game.player2_id
+    else
+      gameboard_rival = JSON.parse(game.game_board1.ships_positions)
+      moves = JSON.parse(game.moves_p2)
+      gameboard_rival[move[0]][move[1]] == 1 ?  moves[move[0]][move[1]] = 2 : moves[move[0]][move[1]] = 1
+      game.moves_p2 = moves.to_json
+      game.turn_player_id = game.player1_id
+    end
+    #verifico si hay ganador
+    if ((game.moves_p1.count('2') == (ships game.game_board1.size)) || (game.moves_p2.count('2') == (ships game.game_board1.size) ))
+      game.winner = current_user
+    end
+    game.save
+    redirect("/players/#{current_user.id}/games/#{game.id}")     
+  else
+    set_error ("Is the other player turn. Wait plase! ")
+    redirect("/players/#{current_user.id}/games") 
+  end
+ 
 end
 
 
@@ -169,12 +204,12 @@ put '/players/:id/games/:id_game' do
       gameboard = GameBoard.find_by(id: game.game_board2_id)
     end
     
-    sp = JSON.parse(gameboard.ships_positions)
+    sp = Matrix.build(gameboard.size) { 0 }.to_a
     
     #Tomo las posiciones de los barcos para guardarlas
     (1..ships(gameboard.size)).each do |i|
       a = params[(:barco.to_s+i.to_s).to_sym].split(",").map { |s| s.to_i }
-      sp[a[0]][a[1]] = 1
+      sp[a[1]][a[2]] = 1
     end
     
     #Guardo las posiciones de los barcos

@@ -13,6 +13,17 @@
     background-color: #87CEFA;
     width: 100%;
   }
+  .botonmove{
+    padding: 16px 19px;
+    background-color: #C0C0C0;
+    width: 100%;
+  }
+  .botonmovebarco{
+    padding: 16px 19px;
+    background-image: url('/img/barco.jpg');
+    background-size: 100% 100%;
+    width: 100%;
+  }
   </style>
 
   <div class="container">
@@ -47,7 +58,7 @@
                   <tr>
                     <th class="tg-s6z2"><%= p e %></th>
                     <% @ships_positions[e].each_index do |x| %>
-                      <td class="tg-031e"> <input class="boton"  type="button" value=" " onClick="assignPosition('<%= "#{e},#{x}" %>')" id="<%= "t1,#{e},#{x}" %>" > </td>
+                      <td class="tg-031e"> <input class="boton"  type="button" value="" onClick="assignPosition('<%= "00,#{e},#{x}" %>')" id="<%= "00,#{e},#{x}" %>" > </td>
                     <% end %>           
                   </tr>
                 <% end %>
@@ -71,39 +82,35 @@
 
         <div class="tab-pane <%= @gameboard.game.turn_player ? 'active' : '' %>" id="play">
           <%if @gameboard.game.turn_player %>
-          <h2>Make your move</h2>
+            <%if @gameboard.game.turn_player == current_user%>
+              <h2>Make your move | Destroy <%= ships @gameboard.size %> ships and Win!</h2>
 
-            <form class="form-horizontal" id="play_game" action="/players/<%= @player_id %>/games/<%= @game_id %>/move" method="POST" onsubmit="return verificar()">
-                <input name="barcos" id="barcos" value="<%= ships @gameboard.size %>" type="hidden"/>
-                <div class="col-xs-1 ">
-                  <label>Tenes <label id="lbarcos"><%= ships @gameboard.size %></label> Barcos</label>
-                </div>
-                <table class="tg col-xs-4">
-                  <tr>
-                    <th class="tg-s6z2 "></th>
+                <form class="form-horizontal" id="play_game" action="/players/<%= @player_id %>/games/<%= @game_id %>/move" method="POST" >
+                    <input name="barcos" id="barcos" value="<%= ships @gameboard.size %>" type="hidden"/>
+                    <table class="tg col-xs-4">
+                      <tr>
+                        <th class="tg-s6z2 "></th>
+                          <% @moves.each_index do |e| %>
+                             <th class="tg-s6z2"><%= p e %></th> 
+                          <% end %>          
+                      </tr>
                       <% @moves.each_index do |e| %>
-                         <th class="tg-s6z2"><%= p e %></th> 
-                      <% end %>          
-                  </tr>
-                  <% @moves.each_index do |e| %>
-                    <tr>
-                      <th class="tg-s6z2"><%= p e %></th>
-                      <% @moves[e].each_index do |x| %>
-                        <td class="tg-031e"> <input class="boton" name="<%= p "#{e},#{x}" %>" type="button" value="" onClick="bomb('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>" > </td>
-                      <% end %>           
-                    </tr>
-                  <% end %>
-                </table>
+                        <tr>
+                          <th class="tg-s6z2"><%= p e %></th>
+                          <% @moves[e].each_index do |x| %>
+                            <td class="tg-031e"> <input <% if @moves[e][x] == 2 %> disabled='disabled' class="botonmovebarco" <% elsif @moves[e][x] == 1 %> class="boton" disabled='disabled' <% end %> class="botonmove" name="<%= p "#{e},#{x}" %>" type="button" value="" onClick="bomb('<%= p "#{e},#{x}" %>')" id="<%= p "#{e},#{x}" %>"  > </td>
+                          <% end %>           
+                        </tr>
+                      <% end %>
+                    </table>
 
-                <div class="col-xs-2 ">
-                  <input type="hidden" name="move" class="form-control" id="move" value="bomba" > 
-                </div>
-
-                <div class="col-xs-10">
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-                    <input type="button" class="btn btn-primary" onClick="history.go(0)" value="Reset Ships">
-                </div>
-            </form>   
+                    <div class="col-xs-2 ">
+                      <input type="hidden" name="move" class="form-control" id="move" value="bomba" > 
+                    </div>
+                </form>   
+                <% else %>
+                  <h1>It's the other player's turn! Wait please...</h1>
+                <% end %>
           <% else %>
             <h2>Waiting for all the players are ready ...</h2>
           <% end %>       

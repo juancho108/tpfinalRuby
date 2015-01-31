@@ -13,8 +13,10 @@ function assignPosition(position){
   barcos = document.getElementById('barcos').value
   if  (barcos > 0) {
     //document.getElementById('barco'+barcos).value = 'position'
-    document.getElementById(position).style.backgroundColor = 'red'
-    document.getElementById(position).value = 'Ship'
+    //document.getElementById(position).style. 'red'
+    document.getElementById(position).style.backgroundImage="url('/img/barco.jpg')";
+    document.getElementById(position).style.backgroundSize="100% 100%";
+    //document.getElementById(position).value = 'Ship'
     document.getElementById(position).disabled = 'disabled'
     document.getElementById('barco'+barcos).value = position
     document.getElementById('barcos').value -= 1
@@ -25,17 +27,8 @@ function assignPosition(position){
 } 
 
 function bomb(position){
-  aux = document.getElementById('move').value
-
-  if (aux == "bomba") {
-    document.getElementById(position).style.backgroundColor = 'red'
-  }
-  else{
-    document.getElementById(aux).style.backgroundColor = '#3166ff'
-  }
-
   document.getElementById('move').value = position
-  alert('llego')
+  document.getElementById('play_game').submit();
 }
 
 

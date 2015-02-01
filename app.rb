@@ -23,18 +23,27 @@ class Application < Sinatra::Base
 
 #rutas 
   ##Authentication
-get '/prueba' do
-  erb :tabs
+before '/*' do
+    unless request.path.include? 'login'
+      set_error ("Please login or register for full access.")
+      response.status 203
+      erb :welcome
+  end
 end
-
 
 get '/' do
   if current_user
     redirect ('/login')
   end
-  @mensaje = "welcome to my Site"
   erb :welcome
 end
+
+=begin
+get '/prueba' do
+  status 203
+  body 'es una prueba'
+end
+=end
 
 get '/login' do
   if current_user == nil
@@ -68,7 +77,8 @@ end
 
 get '/players' do
   @players = User.all
-  response.status = 200
+  response.status = 404
+  response.body = "y esto?"
   erb :'players/list'
 end
 
@@ -76,6 +86,7 @@ post '/players' do
   user = User.new(params[:user])
   if user.save
     session[:user_id] = user.id
+    status = 201
     redirect('/') 
   else
     session[:error] = user.errors.messages

@@ -16,7 +16,7 @@
                 <% elsif e.turn_player == nil %> 
                     <span class="glyphicon glyphicon-adjust"></span> Partida vs <%= e.player2.name %> (Wating)
                 <% else %>
-                    <span class="glyphicon glyphicon-registration-mark"></span> Partida vs <%= e.player2.name %> (Ready)
+                    <span class="glyphicon glyphicon-registration-mark"></span> Partida vs <%= e.player2.name %> (Ready | Turn: <%= e.turn_player.name %>)
                 <% end %>
             </a>
         <% end %>
@@ -32,7 +32,7 @@
                 <% elsif e.turn_player == nil %> 
                     <span class="glyphicon glyphicon-adjust"></span> Partida vs <%= e.player1.name %> (Wating)
                 <% else %>
-                    <span class="glyphicon glyphicon-registration-mark"></span> Partida vs <%= e.player1.name %> (Ready)
+                    <span class="glyphicon glyphicon-registration-mark"></span> Partida vs <%= e.player1.name %> (Ready | Turn: <%= e.turn_player.name %>)
                 <% end %>
             </a>
         <% end %>

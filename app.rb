@@ -24,9 +24,9 @@ class Application < Sinatra::Base
 #rutas 
   ##Authentication
 before '/*' do
+    raise request.path.inspect
     unless request.path.include? 'login'
       set_error ("Please login or register for full access.")
-      response.status 203
       erb :welcome
   end
 end

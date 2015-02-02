@@ -23,27 +23,18 @@ class Application < Sinatra::Base
 
 #rutas 
   ##Authentication
-before '/*' do
-    raise request.path.inspect
-    unless request.path.include? 'login'
-      set_error ("Please login or register for full access.")
-      erb :welcome
-  end
-end
 
 get '/' do
+  redirect '/index'
+end
+
+get '/index' do
   if current_user
-    redirect ('/login')
+    redirect ("/players/#{current_user.id}/games")
   end
   erb :welcome
 end
 
-=begin
-get '/prueba' do
-  status 203
-  body 'es una prueba'
-end
-=end
 
 get '/login' do
   if current_user == nil
@@ -66,7 +57,7 @@ end
 
 get '/logout' do
   session[:user_id] = nil
-  redirect('/')
+  redirect('/index')
 end
 
 
@@ -76,9 +67,9 @@ end
 
 
 get '/players' do
+  access
   @players = User.all
-  response.status = 404
-  response.body = "y esto?"
+  response.status = 200
   erb :'players/list'
 end
 
@@ -86,18 +77,33 @@ post '/players' do
   user = User.new(params[:user])
   if user.save
     session[:user_id] = user.id
-    status = 201
-    redirect('/') 
+    @direction = '/index'
+    @estado = 201
+    @mensaje = "Created"
+    response.status = 201
+    erb :response
   else
     session[:error] = user.errors.messages
-    redirect("/signup")
-  end
+    redirect ('/signup')
+    end
 end
-
-
+=begin
+   if ((users.find_by(name: params[:user])) != nil)
+   @mensaje = Conflict
+    @estado = 409
+    @direction = "/signup"
+    response.status = 409 .inspect
+    
+  elsif (params[:user] =~ /\A\p{Alnum}+\z/).nil?
+    @mensaje = Bad Request
+    @estado = 400
+    @direction = "/signup"
+    response.status = 400
+=end
   ##Game
 
 get '/players/games' do
+  access
   #if User.first() ? @players = User.all()
   @players = User.where.not(id: current_user.id) unless User.first == nil
   erb :'game/new'
@@ -120,20 +126,28 @@ post '/players/games/' do
 
   gameboard_player_1.save
   gameboard_player_2.save
-  #verificar si no necesito nada mas
-  redirect ("/players/#{current_user.id}/games/#{game.id}")
+  
+  @direction = "/players/#{current_user.id}/games/#{game.id}"
+
+  @mensaje = "Created"
+  @estado = 201
+  response.status = 201
+  erb :response
+  #redirect ("/players/#{current_user.id}/games/#{game.id}")
 end
 
 get '/players/:id/games' do
+  access
   @player_id = params[:id].to_i
-
   @games_as_p1 = Game.where(player1_id: @player_id).reverse
   @games_as_p2 = Game.where(player2_id: @player_id).reverse
+  response.status = 200
   erb :'game/list'
 
 end
 
 get '/players/:id/games/:id_game' do
+  access
   # pregunto si soy el usuario que viene en la url y si ademas de ser el usuario de la URL, soy jugador del juego indicado
   if ((current_user.id == params[:id].to_i) &&
      ((current_user.games_as_player1.exists?(id: params[:id_game])) || (current_user.games_as_player2.exists?(id: params[:id_game]))))
@@ -152,8 +166,8 @@ get '/players/:id/games/:id_game' do
             @gameboard = GameBoard.find_by(id: game.game_board2_id)
             @moves = JSON.parse(game.moves_p2)
           end
-
           @ships_positions = JSON.parse(@gameboard.ships_positions)
+          response.status = 200
           erb :'game/gameboards'
         elsif game.winner == current_user
           @message = "CONGRATULATIONS! YOU WIN THE GAME!!"
@@ -193,10 +207,17 @@ post '/players/:id/games/:id_game/move' do
       game.winner = current_user
     end
     game.save
-    redirect("/players/#{current_user.id}/games/#{game.id}")     
+    
+    @mensaje = "Created"
+    @estado = 201
+    @direction = "/players/#{current_user.id}/games/#{game.id}"
+    erb :response
   else
     set_error ("Is the other player turn. Wait plase! ")
-    redirect("/players/#{current_user.id}/games") 
+    @mensaje = "Forbbiden"
+    @estado = 403
+    @direction = "/players/#{current_user.id}/games"
+    erb :response
   end
  
 end
@@ -233,20 +254,10 @@ put '/players/:id/games/:id_game' do
   else
     set_error ("You don't have permission to perform this action. The game is in progress... ")
   end
-  redirect("/players/#{current_user.id}/games")
+  @mensaje = "OK"
+  @estado = 200
+  @direction = "/players/#{current_user.id}/games"
+  erb :response
 end
-
-
-  ##GameBoard
-
-get '/gameboard/create' do 
-  erb :'gameboard/new'
-end
-
-get '/gameboard/show' do
-  erb :'gameboard/juego'
-end
-
-
 
 end

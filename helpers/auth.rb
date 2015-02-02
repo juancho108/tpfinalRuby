@@ -5,3 +5,10 @@ def current_user
     return nil
   end
 end
+
+def access
+  if current_user == nil
+    set_error ("Please login or signup for full access")
+    redirect('/login')
+  end
+end

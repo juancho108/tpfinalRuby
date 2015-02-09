@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
 
 gem 'sinatra'
+gem 'byebug'
+gem 'sinatra-flash'
 gem 'sqlite3'
 gem 'sinatra-activerecord'
 gem 'rb-readline'

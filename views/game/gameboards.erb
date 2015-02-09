@@ -33,7 +33,6 @@
       <li <%= @gameboard.game.turn_player.nil? ? "class='active'" : '' %>><a href="#mygameboard" data-toggle="tab">My GameBoard</a></li>
       <li <%= @gameboard.game.turn_player ? "class='active'" : '' %>> <a href="#play" data-toggle="tab">Play Game</a></li>
 
-      <li><a href="#green" data-toggle="tab">Green</a></li>
    </ul>
 
    <!-- TABLERO PARA UBICAR BARCOS -->
@@ -43,9 +42,9 @@
 
           <form class="form-horizontal" action="/players/<%= @player_id %>/games/<%= @game_id %>" method="POST" onsubmit="return verificar()">
               <input type="hidden" name="_method" value="PUT" />
-              <input name="barcos" id="barcos" value="<%= ships @gameboard.size %>" type="hidden"/>
+              <input name="barcos" id="barcos" value="<%= @cant_ships %>" type="hidden"/>
               <div class="col-xs-1 ">
-                <label>Tenes <label id="lbarcos"><%= ships @gameboard.size %></label> Barcos</label>
+                <label>Tenes <label id="lbarcos"><%= @cant_ships %></label> Barcos</label>
               </div>
               <table class="tg col-xs-4">
                 <tr>
@@ -65,7 +64,7 @@
               </table>
 
               <div class="col-xs-2 ">
-                <% (1..ships(@gameboard.size)).each do |e| %>
+                <% (1..@cant_ships).each do |e| %>
                   <input type="hidden" name="barco<%= p e %>" class="form-control" id="barco<%= p e %>" value="Posicion Barco<%= p e %>" > 
                 <% end %>
               </div>
@@ -83,10 +82,9 @@
         <div class="tab-pane <%= @gameboard.game.turn_player ? 'active' : '' %>" id="play">
           <%if @gameboard.game.turn_player %>
             <%if @gameboard.game.turn_player == current_user%>
-              <h2>Make your move | Destroy <%= ships @gameboard.size %> ships and Win!</h2>
-
+              <h2>Make your move | Destroy <%= @cant_ships %> ships and Win!</h2>
                 <form class="form-horizontal" id="play_game" action="/players/<%= @player_id %>/games/<%= @game_id %>/move" method="POST" >
-                    <input name="barcos" id="barcos" value="<%= ships @gameboard.size %>" type="hidden"/>
+                    <input name="barcos" id="barcos" value="<%= @cant_ships %>" type="hidden"/>
                     <table class="tg col-xs-4">
                       <tr>
                         <th class="tg-s6z2 "></th>
@@ -110,18 +108,12 @@
                 </form>   
                 <% else %>
                   <h1>It's the other player's turn! Wait please...</h1>
+                  <input type="button" class="btn btn-primary btn-block" onClick="history.go(0)" value="REFRESH">
                 <% end %>
           <% else %>
             <h2>Waiting for all the players are ready ...</h2>
           <% end %>       
         </div>
-
-
-        <div class="tab-pane" id="green">
-            <h1>Green</h1>
-            <p>green green green </p>
-        </div>
-
 
     </div>
 </div>
